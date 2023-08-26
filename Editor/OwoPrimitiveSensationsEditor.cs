@@ -82,7 +82,7 @@ public class OwoPrimitiveSensationsEditor : Editor
             myScript.DisconnectVestButtonPressed();
         }
         GUILayout.Space(10);
-        if (GUILayout.Button("Send PreMade Bleeding Event"))
+        if (GUILayout.Button("Send PreMade Gun Shot with Exit Event"))
         {
             myScript.SendTestingEvent();
         }
