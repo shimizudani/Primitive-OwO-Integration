@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OWO</name>
+    </assembly>
+    <members>
+        <member name="M:OWOGame.OWO.Configure(OWOGame.GameAuth)">
+            <summary>
+            Assigns a GameAuth file that will be used to authenticate with the owo app.
+            </summary>
+            <param name="game"></param>
+        </member>
+        <member name="M:OWOGame.OWO.AutoConnect">
+            <summary>
+            Searches nearby owo apps to connect.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OWOGame.OWO.Connect(System.String)">
+            <summary>
+            Searches for a specific owo app to connect.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OWOGame.OWO.Stop">
+            <summary>
+            Stops the current sensation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OWOGame.OWO.Send(OWOGame.Sensation,OWOGame.Muscle[])">
+            <summary>
+            Sends a sensation to the connected owo app.
+            </summary>
+            <param name="sensation"></param>
+            <param name="muscles"></param>
+        </member>
+        <member name="M:OWOGame.OWO.Disconnect">
+            <summary>
+            Disconnects from the connected owo app.
+            </summary>
+        </member>
+    </members>
+</doc>
