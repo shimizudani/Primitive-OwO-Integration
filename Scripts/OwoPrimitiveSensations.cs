@@ -138,23 +138,23 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
     private MicroSensation startup;
     private MicroSensation sensationEvent;
-    [Header("MicroSensation to Append File Names")]
+    [Header("MicroSensation File Names to Append ")]
     [SerializeField]
     private List<string> fileNames;
-    [Header("Appended File Name To Save As")]
+    [Header("Appended File Name To Save or Load")]
     [SerializeField]
     private string appendFileName;
 
     [Header("File Settings")]
-    [SerializeField, Tooltip("Filename to save or load the Sensation event.")]
-    private string sensationName = "DefaultSensation";
+    [SerializeField, Tooltip("Filename to Save or load MicroSensation.")]
+    private string sensationName = "DefaultMicroSensation";
 
-    [Header("Sensation Event Settings")]
-    [SerializeField, Tooltip("Frequency for the Sensation event."), Frequency(1, 100)]
+    [Header("MicroSensation Settings")]
+    [SerializeField, Tooltip("Frequency for the MicroSensation."), Frequency(1, 100)]
     private int frequency = 100;
-    [SerializeField, Tooltip("Duration of the Sensation event.")]
+    [SerializeField, Tooltip("Duration of the MicroSensation.")]
     private float duration = 1.0f;
-    [SerializeField, Tooltip("Intensity percentage for the Sensation event."), IntensityPercentage(1, 100)]
+    [SerializeField, Tooltip("Intensity percentage for the MicroSensation."), IntensityPercentage(1, 100)]
     private int intensityPercentage = 25;
     [SerializeField, Tooltip("Set individual Muscle Intensitys.")]
     private bool useMuscleIntOveride;
@@ -164,7 +164,7 @@ public class OwoPrimitiveSensations : MonoBehaviour
     [MillisecondsMapping(0, 2)]
     [SerializeField, Tooltip("Ramp down time in milliseconds.")]
     private float rampDownInMills = 0f;
-    [SerializeField, Tooltip("Exit delay for the Sensation event.")]
+    [SerializeField, Tooltip("Exit delay for the MicroSensation.")]
     private float exitDelay = 0f;
 
     [Header("Muscle Groups")]
@@ -193,9 +193,9 @@ public class OwoPrimitiveSensations : MonoBehaviour
     private bool prevBackMuscles = false;
     private bool prevFrontMuscles = false;
 
-    [HideInInspector, Tooltip("List of available haptic event files.")]
+    [HideInInspector, Tooltip("List of available MicroSensations.")]
     public string[] availableFiles;
-    [HideInInspector, Tooltip("Currently selected haptic event file.")]
+    [HideInInspector, Tooltip("Currently selected MicroSensation.")]
     public int selectedFileIndex = 0;
 
     private void Start()
