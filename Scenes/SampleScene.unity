@@ -167,27 +167,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d33091c6c04791a4b8524d0056b0a0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: hapticEvent
+  sensationName: DefaultSensation
   frequency: 100
   duration: 1
   intensityPercentage: 25
+  useMuscleIntOveride: 0
   rampUpInMills: 0
   rampDownInMills: 0
   exitDelay: 0
   allMuscles: 1
   backMuscles: 0
   frontMuscles: 0
-  pectoral_R: 0
-  pectoral_L: 0
-  abdominal_R: 0
-  abdominal_L: 0
-  arm_R: 0
-  arm_L: 0
-  dorsal_R: 0
-  dorsal_L: 0
-  lumbar_R: 0
-  lumbar_L: 0
-  availableFiles: []
+  pectoral_R:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  pectoral_L:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  abdominal_R:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  abdominal_L:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  arm_R:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  arm_L:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  dorsal_R:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  dorsal_L:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  lumbar_R:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  lumbar_L:
+    isUsed: 0
+    useOveride: 0
+    intensityOveride: 0
+  availableFiles:
+  - DefaultSensation
   selectedFileIndex: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

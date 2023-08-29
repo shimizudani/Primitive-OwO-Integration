@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
+
 public class OwoPrimitiveSensations : MonoBehaviour
 {
-
     public class BaseAttribute : PropertyAttribute
     {
         public float min;
@@ -22,22 +22,18 @@ public class OwoPrimitiveSensations : MonoBehaviour
             this.max = max;
         }
     }
-
     public class MillisecondsMappingAttribute : BaseAttribute
     {
         public MillisecondsMappingAttribute(float min = 0f, float max = 2f) : base(min, max) { }
     }
-
     public class FrequencyAttribute : BaseAttribute
     {
         public FrequencyAttribute(float min = 1, float max = 100) : base(min, max) { }
     }
-
     public class IntensityPercentageAttribute : BaseAttribute
     {
         public IntensityPercentageAttribute(float min = 1, float max = 100) : base(min, max) { }
     }
-
     public abstract class BaseDrawer : PropertyDrawer
     {
         protected abstract string FormatDisplayValue(SerializedProperty property);
@@ -71,16 +67,13 @@ public class OwoPrimitiveSensations : MonoBehaviour
                 }
             }
 
-            // Move this block outside of the EditorGUI.EndChangeCheck() to always display the value.
             string displayValue = FormatDisplayValue(property);
             Rect displayValuePosition = new Rect(sliderPosition.xMax + 5, position.y, position.width * 0.15f, position.height);
             EditorGUI.LabelField(displayValuePosition, displayValue);
 
             EditorGUI.EndProperty();
         }
-
     }
-
     [CustomPropertyDrawer(typeof(MillisecondsMappingAttribute))]
     public class MillisecondsMappingDrawer : BaseDrawer
     {
@@ -89,7 +82,6 @@ public class OwoPrimitiveSensations : MonoBehaviour
             return (property.floatValue * 1000).ToString("0.##") + "ms";
         }
     }
-
     [CustomPropertyDrawer(typeof(FrequencyAttribute))]
     public class FrequencyDrawer : BaseDrawer
     {
@@ -98,7 +90,6 @@ public class OwoPrimitiveSensations : MonoBehaviour
             return property.intValue + " Hz";
         }
     }
-
     [CustomPropertyDrawer(typeof(IntensityPercentageAttribute))]
     public class IntensityPercentageDrawer : BaseDrawer
     {
@@ -111,6 +102,7 @@ public class OwoPrimitiveSensations : MonoBehaviour
     [System.Serializable]
     public class HapticData
     {
+        public String sensationName;
         public bool allMuscles;
         public bool backMuscles;
         public bool frontMuscles;
@@ -120,70 +112,83 @@ public class OwoPrimitiveSensations : MonoBehaviour
         public float rampUpInMills;
         public float rampDownInMills;
         public float exitDelay;
-        public bool pectoral_R;
-        public bool pectoral_L;
-        public bool abdominal_R;
-        public bool abdominal_L;
-        public bool arm_R;
-        public bool arm_L;
-        public bool dorsal_R;
-        public bool dorsal_L;
-        public bool lumbar_R;
-        public bool lumbar_L;
+        public MuscleData pectoral_R;
+        public MuscleData pectoral_L;
+        public MuscleData abdominal_R;
+        public MuscleData abdominal_L;
+        public MuscleData arm_R;
+        public MuscleData arm_L;
+        public MuscleData dorsal_R;
+        public MuscleData dorsal_L;
+        public MuscleData lumbar_R;
+        public MuscleData lumbar_L;
+    }
+    [System.Serializable]
+    public struct MuscleData
+    {
+        public bool isUsed;
+        public bool useOveride;
+        public int intensityOveride;
+    }
+    [System.Serializable]
+    public class AppendedMicroSensations
+    {
+        public string data;
     }
 
     private MicroSensation startup;
-    private Sensation bulletshot;
-    private MicroSensation hapticEvent;
-    [Header("File Settings")]
-    [SerializeField, Tooltip("Filename to save or load the haptic event.")]
-    private string fileName = "hapticEvent";
+    private MicroSensation sensationEvent;
+    [Header("MicroSensation to Append File Names")]
+    [SerializeField]
+    private List<string> fileNames;
+    [Header("Appended File Name To Save As")]
+    [SerializeField]
+    private string appendFileName;
 
-    [Header("Haptic Event Settings")]
-    [SerializeField, Tooltip("Frequency for the haptic event."), Frequency(1, 100)]
+    [Header("File Settings")]
+    [SerializeField, Tooltip("Filename to save or load the Sensation event.")]
+    private string sensationName = "DefaultSensation";
+
+    [Header("Sensation Event Settings")]
+    [SerializeField, Tooltip("Frequency for the Sensation event."), Frequency(1, 100)]
     private int frequency = 100;
-    [SerializeField, Tooltip("Duration of the haptic event.")]
+    [SerializeField, Tooltip("Duration of the Sensation event.")]
     private float duration = 1.0f;
-    [SerializeField, Tooltip("Intensity percentage for the haptic event."), IntensityPercentage(1, 100)]
+    [SerializeField, Tooltip("Intensity percentage for the Sensation event."), IntensityPercentage(1, 100)]
     private int intensityPercentage = 25;
+    [SerializeField, Tooltip("Set individual Muscle Intensitys.")]
+    private bool useMuscleIntOveride;
     [MillisecondsMapping(0, 2)]
     [SerializeField, Tooltip("Ramp up time in milliseconds.")]
     private float rampUpInMills = 0f;
     [MillisecondsMapping(0, 2)]
     [SerializeField, Tooltip("Ramp down time in milliseconds.")]
     private float rampDownInMills = 0f;
-    [SerializeField, Tooltip("Exit delay for the haptic event.")]
+    [SerializeField, Tooltip("Exit delay for the Sensation event.")]
     private float exitDelay = 0f;
 
     [Header("Muscle Groups")]
     [SerializeField, Tooltip("If Used All Other Muscle Settings are Ignored")]
-    private bool allMuscles=true;
+    private bool allMuscles = true;
     [SerializeField, Tooltip("If Used Settings of Muscles On the Back are Ignored")]
     private bool backMuscles;
     [SerializeField, Tooltip("If Used Settings of Muscle On the Front Ignored")]
     private bool frontMuscles;
+
     [Header("Front Muscles")]
-    [SerializeField, Tooltip("Right Pectoral muscle.")]
-    private bool pectoral_R;
-    [SerializeField, Tooltip("Left Pectoral muscle.")]
-    private bool pectoral_L;
-    [SerializeField, Tooltip("Right Abdominal muscle.")]
-    private bool abdominal_R;
-    [SerializeField, Tooltip("Left Abdominal muscle.")]
-    private bool abdominal_L;
-    [SerializeField, Tooltip("Right Arm.")]
-    private bool arm_R;
-    [SerializeField, Tooltip("Left Arm.")]
-    private bool arm_L;
+    public MuscleData pectoral_R;
+    public MuscleData pectoral_L;
+    public MuscleData abdominal_R;
+    public MuscleData abdominal_L;
+    public MuscleData arm_R;
+    public MuscleData arm_L;
+
     [Header("Back Muscles")]
-    [SerializeField, Tooltip("Right Dorsal muscle.")]
-    private bool dorsal_R;
-    [SerializeField, Tooltip("Left Dorsal muscle.")]
-    private bool dorsal_L;
-    [SerializeField, Tooltip("Right Lumbar muscle.")]
-    private bool lumbar_R;
-    [SerializeField, Tooltip("Left Lumbar muscle.")]
-    private bool lumbar_L;
+    public MuscleData dorsal_R;
+    public MuscleData dorsal_L;
+    public MuscleData lumbar_R;
+    public MuscleData lumbar_L;
+
     private bool prevAllMuscles = false;
     private bool prevBackMuscles = false;
     private bool prevFrontMuscles = false;
@@ -197,9 +202,6 @@ public class OwoPrimitiveSensations : MonoBehaviour
     {
         // "Sartup Sensation" I added For Debugging
         startup = SensationsFactory.Create(100, 1, 25, 1, 1, 0);
-        // Copy Of the Shot with exit Default Sensation From the Sensation Creator App
-        bulletshot = Sensation.Parse("30,1,100,0,0,0,|0%100&20,1,100,0,0,0,|6%100&50,5,80,0,300,0,|6%100,0%100");
-        hapticEvent = SensationsFactory.Create(frequency, duration, intensityPercentage, rampUpInMills, rampDownInMills, exitDelay);
         RefreshAvailableFiles();
     }
 
@@ -221,7 +223,6 @@ public class OwoPrimitiveSensations : MonoBehaviour
             ClearIndividualMuscles();
             ClearGroupMusclesExcept("frontMuscles");
         }
-
         // If any specific muscle is active, clear all main muscle flags
         if (AnySpecificMuscleActive())
         {
@@ -237,36 +238,38 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
     private bool AnySpecificMuscleActive()
     {
-        return pectoral_R || pectoral_L || abdominal_R || abdominal_L ||
-               arm_R || arm_L || dorsal_R || dorsal_L || lumbar_R || lumbar_L;
+        return pectoral_R.isUsed || pectoral_L.isUsed || abdominal_R.isUsed || abdominal_L.isUsed ||
+               arm_R.isUsed || arm_L.isUsed || dorsal_R.isUsed || dorsal_L.isUsed || lumbar_R.isUsed || lumbar_L.isUsed;
     }
-
+    private bool IsAnyBoolTrue(HapticData data)
+    {
+        return data.allMuscles || data.backMuscles || data.frontMuscles || data.pectoral_R.isUsed || data.pectoral_L.isUsed ||
+               data.abdominal_R.isUsed || data.abdominal_L.isUsed || data.arm_R.isUsed || data.arm_L.isUsed || data.dorsal_R.isUsed ||
+               data.dorsal_L.isUsed || data.lumbar_R.isUsed || data.lumbar_L.isUsed;
+    }
     private void ClearGroupMusclesExcept(string except)
     {
         if (except != "allMuscles") allMuscles = false;
         if (except != "backMuscles") backMuscles = false;
         if (except != "frontMuscles") frontMuscles = false;
     }
-
     private void ClearIndividualMuscles()
     {
-        pectoral_R = false;
-        pectoral_L = false;
-        abdominal_R = false;
-        abdominal_L = false;
-        arm_R = false;
-        arm_L = false;
-        dorsal_R = false;
-        dorsal_L = false;
-        lumbar_R = false;
-        lumbar_L = false;
+        pectoral_R.isUsed = false;
+        pectoral_L.isUsed = false;
+        abdominal_R.isUsed = false;
+        abdominal_L.isUsed = false;
+        arm_R.isUsed = false;
+        arm_L.isUsed = false;
+        dorsal_R.isUsed = false;
+        dorsal_L.isUsed = false;
+        lumbar_R.isUsed = false;
+        lumbar_L.isUsed = false;
     }
-
     public void InitializeSuitButtonPressed()
     {
         InitializeOWO();
     }
-
     public void SendHapticButtonPressed()
     {
         SendHapticEventBasedOnMuscles();
@@ -275,52 +278,65 @@ public class OwoPrimitiveSensations : MonoBehaviour
     {
         StopHapticEventBasedOnMuscles();
     }
-
     public void DisconnectVestButtonPressed()
     {
         OWO.Disconnect();
+        Debug.Log("Vest Disconnected");
     }
-
-    private List<Muscle> GetSelectedMuscles()
+    private Muscle[] GetSelectedMuscles()
     {
         var muscles = new List<Muscle>();
 
         if (allMuscles)
         {
             muscles.AddRange(Muscle.All);
-            return muscles;
-        }
-
-        if (frontMuscles)
-        {
-            muscles.AddRange(Muscle.Front);
         }
         else
         {
-            if (pectoral_R) muscles.Add(Muscle.Pectoral_R);
-            if (pectoral_L) muscles.Add(Muscle.Pectoral_L);
-            if (abdominal_R) muscles.Add(Muscle.Abdominal_R);
-            if (abdominal_L) muscles.Add(Muscle.Abdominal_L);
-            if (arm_R) muscles.Add(Muscle.Arm_R);
-            if (arm_L) muscles.Add(Muscle.Arm_L);
+            if (frontMuscles)
+            {
+                muscles.AddRange(Muscle.Front);
+            }
+            else
+            {
+                AddMuscleWithOverride(muscles, pectoral_R, Muscle.Pectoral_R);
+                AddMuscleWithOverride(muscles, pectoral_L, Muscle.Pectoral_L);
+                AddMuscleWithOverride(muscles, abdominal_R, Muscle.Abdominal_R);
+                AddMuscleWithOverride(muscles, abdominal_L, Muscle.Abdominal_L);
+                AddMuscleWithOverride(muscles, arm_R, Muscle.Arm_R);
+                AddMuscleWithOverride(muscles, arm_L, Muscle.Arm_L);
+            }
+            if (backMuscles)
+            {
+                muscles.AddRange(Muscle.Back);
+            }
+            else
+            {
+                AddMuscleWithOverride(muscles, dorsal_R, Muscle.Dorsal_R);
+                AddMuscleWithOverride(muscles, dorsal_L, Muscle.Dorsal_L);
+                AddMuscleWithOverride(muscles, lumbar_R, Muscle.Lumbar_R);
+                AddMuscleWithOverride(muscles, lumbar_L, Muscle.Lumbar_L);
+            }
         }
-
-        if (backMuscles)
-        {
-            muscles.AddRange(Muscle.Back);
-        }
-        else
-        {
-            if (dorsal_R) muscles.Add(Muscle.Dorsal_R);
-            if (dorsal_L) muscles.Add(Muscle.Dorsal_L);
-            if (lumbar_R) muscles.Add(Muscle.Lumbar_R);
-            if (lumbar_L) muscles.Add(Muscle.Lumbar_L);
-        }
-
-        return muscles;
+        return muscles.ToArray();
     }
 
-    public async void InitializeOWO()  
+    private void AddMuscleWithOverride(List<Muscle> muscles, MuscleData muscleData, Muscle muscleType)
+    {
+        if (muscleData.isUsed)
+        {
+            if (muscleData.useOveride)
+            {
+                muscles.Add(muscleType.WithIntensity(muscleData.intensityOveride));
+            }
+            else
+            {
+                muscles.Add(muscleType);
+            }
+        }
+    }
+
+    public async void InitializeOWO()
     {
         Debug.Log("Initializing suit");
 
@@ -340,8 +356,6 @@ public class OwoPrimitiveSensations : MonoBehaviour
         }
     }
 
-
-
     private IEnumerator StartupPulse()
     {
         yield return new WaitForSeconds(0.5f);
@@ -359,8 +373,8 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
     private void SendHapticEventBasedOnMuscles()
     {
-        hapticEvent = SensationsFactory.Create(frequency, duration, intensityPercentage, rampUpInMills, rampDownInMills, exitDelay);
-        OWO.Send(hapticEvent.WithMuscles(GetSelectedMuscles().ToArray()));
+        sensationEvent = SensationsFactory.Create(frequency, duration, intensityPercentage, rampUpInMills, rampDownInMills, exitDelay);
+        OWO.Send(sensationEvent.WithMuscles(GetSelectedMuscles().ToArray()));
     }
 
     private void StopHapticEventBasedOnMuscles()
@@ -370,7 +384,7 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
     public void RefreshAvailableFiles()
     {
-        string directoryPath = "Assets/Haptic Events";
+        string directoryPath = "Assets/MicroSensation Events";
         if (Directory.Exists(directoryPath))
         {
             availableFiles = Directory.GetFiles(directoryPath, "*.json").Select(Path.GetFileNameWithoutExtension).ToArray();
@@ -383,12 +397,7 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
     public void SaveHapticEvent()
     {
-        SaveHapticEventToFile(fileName);
-    }
-    public void SendTestingEvent()
-    {
-        
-        OWO.Send(bulletshot);
+        SaveHapticEventToFile(sensationName);
     }
 
     public void LoadHapticEvent()
@@ -400,6 +409,7 @@ public class OwoPrimitiveSensations : MonoBehaviour
     {
         HapticData data = new()
         {
+            sensationName = this.sensationName,
             allMuscles = this.allMuscles,
             backMuscles = this.backMuscles,
             frontMuscles = this.frontMuscles,
@@ -421,49 +431,46 @@ public class OwoPrimitiveSensations : MonoBehaviour
             lumbar_L = this.lumbar_L
         };
         // Check if at least one of the bool values is true
-        bool isAnyBoolTrue = data.allMuscles || data.backMuscles || data.frontMuscles || data.pectoral_R || data.pectoral_L ||
-                             data.abdominal_R || data.abdominal_L || data.arm_R || data.arm_L || data.dorsal_R ||
-                             data.dorsal_L || data.lumbar_R || data.lumbar_L;
-
+        bool isAnyBoolTrue = IsAnyBoolTrue(data);
         // If none of the booleans are true, set allMuscles to true
         if (!isAnyBoolTrue)
         {
             data.allMuscles = true;
         }
-
-        string directoryPath = "Assets/Haptic Events";
+        string directoryPath = "Assets/MicroSensation Events";
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
         }
-
-        string path = Path.Combine(directoryPath, fileName + ".json"); // using .json extension
+        // using .json extension for saving
+        string path = Path.Combine(directoryPath, fileName + ".json");
         string jsonData = JsonUtility.ToJson(data, true); // true to make it nicely formatted
         File.WriteAllText(path, jsonData);
-
         AssetDatabase.Refresh();
         RefreshAvailableFiles();
+        Debug.Log("File Saved");
     }
 
     private void LoadHapticEventFromFile()
     {
-        string path = Path.Combine("Assets/Haptic Events", availableFiles[selectedFileIndex] + ".json");
+        string path = Path.Combine("Assets/MicroSensation Events", availableFiles[selectedFileIndex] + ".json");
         if (File.Exists(path))
         {
             string jsonData = File.ReadAllText(path);
             HapticData data = JsonUtility.FromJson<HapticData>(jsonData);
-
+            sensationName = data.sensationName;
+            // Set the Sensation fields
             frequency = data.frequency;
             duration = data.duration;
             intensityPercentage = data.intensityPercentage;
             rampUpInMills = data.rampUpInMills;
             rampDownInMills = data.rampDownInMills;
             exitDelay = data.exitDelay;
-
-            // Set the muscle boolean fields
+            // Set the muscle bool fields
             allMuscles = data.allMuscles;
             backMuscles = data.backMuscles;
             frontMuscles = data.frontMuscles;
+            //set the muscleData fields
             pectoral_R = data.pectoral_R;
             pectoral_L = data.pectoral_L;
             abdominal_R = data.abdominal_R;
@@ -474,30 +481,18 @@ public class OwoPrimitiveSensations : MonoBehaviour
             dorsal_L = data.dorsal_L;
             lumbar_R = data.lumbar_R;
             lumbar_L = data.lumbar_L;
-
-            // Check if at least one of the bool values is true
-            bool isAnyBoolTrue = data.allMuscles || data.backMuscles || data.frontMuscles || data.pectoral_R || data.pectoral_L ||
-                                 data.abdominal_R || data.abdominal_L || data.arm_R || data.arm_L || data.dorsal_R ||
-                                 data.dorsal_L || data.lumbar_R || data.lumbar_L;
-
-            // If none of the booleans are true, set allMuscles to true
-            if (!isAnyBoolTrue)
-            {
-                allMuscles = true;
-            }
-
-            // Update the haptic event based on loaded settings
-            hapticEvent = SensationsFactory.Create(frequency, duration, intensityPercentage, rampUpInMills, rampDownInMills, exitDelay);
-            fileName = availableFiles[selectedFileIndex];
+            // If none of the Muscles are true, set allMuscles to true
+            bool isAnyBoolTrue = IsAnyBoolTrue(data);
+            if (!isAnyBoolTrue) allMuscles = true;
         }
         else
         {
             Debug.LogError("Haptic event file not found: " + path);
         }
     }
-    private (MicroSensation, Muscle[]) LoadHapticEventFromFileForUse(string fileName)
+    private (MicroSensation, Muscle[]) LoadHapticEventFromFileForUse(string sensationName)
     {
-        string path = Path.Combine("Assets/Haptic Events", fileName + ".json");
+        string path = Path.Combine("Assets/MicroSensation Events", sensationName + ".json");
         if (!File.Exists(path)) return (null, null);
 
         string jsonData = File.ReadAllText(path);
@@ -516,11 +511,9 @@ public class OwoPrimitiveSensations : MonoBehaviour
 
         return (loadedHapticEvent, selectedMuscles);
     }
-
     private Muscle[] GetSelectedMusclesFromData(HapticData data)
     {
         List<Muscle> selectedMuscles = new();
-
         if (data.allMuscles)
         {
             selectedMuscles.AddRange(Muscle.All);
@@ -533,54 +526,158 @@ public class OwoPrimitiveSensations : MonoBehaviour
             }
             else
             {
-                if (data.pectoral_R) selectedMuscles.Add(Muscle.Pectoral_R);
-                if (data.pectoral_L) selectedMuscles.Add(Muscle.Pectoral_L);
-                if (data.abdominal_R) selectedMuscles.Add(Muscle.Abdominal_R);
-                if (data.abdominal_L) selectedMuscles.Add(Muscle.Abdominal_L);
-                if (data.arm_R) selectedMuscles.Add(Muscle.Arm_R);
-                if (data.arm_L) selectedMuscles.Add(Muscle.Arm_L);
+                AddMuscleWithOverride(selectedMuscles, data.pectoral_R, Muscle.Pectoral_R);
+                AddMuscleWithOverride(selectedMuscles, data.pectoral_L, Muscle.Pectoral_L);
+                AddMuscleWithOverride(selectedMuscles, data.abdominal_R, Muscle.Abdominal_R);
+                AddMuscleWithOverride(selectedMuscles, data.abdominal_L, Muscle.Abdominal_L);
+                AddMuscleWithOverride(selectedMuscles, data.arm_R, Muscle.Arm_R);
+                AddMuscleWithOverride(selectedMuscles, data.arm_L, Muscle.Arm_L);
             }
-
             if (data.backMuscles)
             {
                 selectedMuscles.AddRange(Muscle.Back);
             }
             else
             {
-                if (data.dorsal_R) selectedMuscles.Add(Muscle.Dorsal_R);
-                if (data.dorsal_L) selectedMuscles.Add(Muscle.Dorsal_L);
-                if (data.lumbar_R) selectedMuscles.Add(Muscle.Lumbar_R);
-                if (data.lumbar_L) selectedMuscles.Add(Muscle.Lumbar_L);
+                AddMuscleWithOverride(selectedMuscles, data.dorsal_R, Muscle.Dorsal_R);
+                AddMuscleWithOverride(selectedMuscles, data.dorsal_L, Muscle.Dorsal_L);
+                AddMuscleWithOverride(selectedMuscles, data.lumbar_R, Muscle.Lumbar_R);
+                AddMuscleWithOverride(selectedMuscles, data.lumbar_L, Muscle.Lumbar_L);
             }
         }
-
         return selectedMuscles.ToArray();
     }
-
-
     public void SendHapticEventFromFileName()
     {
-        (MicroSensation loadedEvent, Muscle[] muscles) = LoadHapticEventFromFileForUse(fileName);
+        (MicroSensation loadedEvent, Muscle[] muscles) = LoadHapticEventFromFileForUse(sensationName);
         if (loadedEvent != null && muscles != null && muscles.Length > 0)
         {
             OWO.Send(loadedEvent.WithMuscles(muscles));
         }
         else
         {
-            if(loadedEvent == null)
+            if (loadedEvent == null)
             {
                 Debug.Log("Loaded Event Null");
             }
-            if(muscles == null)
+            if (muscles == null)
             {
                 Debug.Log("Muscle Array Null");
             }
-            if(muscles.Length <= 0)
+            if (muscles.Length <= 0)
             {
                 Debug.Log("Muscle Array length Issue");
             }
             Debug.LogError("Failed to send haptic event from file.");
         }
+    }
+    public void AppendSensationsFromFiles()
+    {
+        List<(MicroSensation sensation, Muscle[] muscles)> loadedData = new List<(MicroSensation, Muscle[])>();
+
+        foreach (var fileName in fileNames)
+        {
+            (MicroSensation loadedEvent, Muscle[] muscles) = LoadSensationsForAppend(fileName);
+            if (loadedEvent != null && muscles != null && muscles.Length > 0)
+            {
+                loadedData.Add((loadedEvent, muscles));
+            }
+            else
+            {
+                LogFailedLoadingSensation(loadedEvent, muscles);
+            }
+        }
+
+        if (loadedData.Count < 2)
+        {
+            Debug.Log("Invalid number of loaded sensations. Must be 2 or Above.");
+            return;
+        }
+
+        var combinedSensations = CombineAppendedSensations(loadedData, 0);
+
+        // Serialize and save to JSON file
+        string directoryPath = "Assets/Sensation Events";
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+        AppendedMicroSensations sensationtojson = new()
+        {
+            data = combinedSensations
+        };
+
+        string path = Path.Combine(directoryPath, appendFileName + ".json");
+        string jsonString = JsonUtility.ToJson(sensationtojson, true);
+        File.WriteAllText(path, jsonString);
+
+        AssetDatabase.Refresh();
+        Debug.Log("Sensation Json Saved");
+    }
+
+    private void LogFailedLoadingSensation(MicroSensation loadedEvent, Muscle[] muscles)
+    {
+        if (loadedEvent == null)
+        {
+            Debug.Log("Loaded Event Null");
+        }
+        if (muscles == null)
+        {
+            Debug.Log("Muscle Array Null");
+        }
+        if (muscles.Length <= 0)
+        {
+            Debug.Log("Muscle Array length Issue");
+        }
+        Debug.LogError("Failed to send haptic event from file.");
+    }
+
+    public void SendSensationFromJson()
+    {
+        string directoryPath = "Assets/Sensation Events";
+        if (!Directory.Exists(directoryPath))
+        {
+            Debug.Log("Folder Not Found");
+        }
+        string path = Path.Combine(directoryPath, appendFileName + ".json");
+
+        string fromjsonString = File.ReadAllText(path);
+        AppendedMicroSensations dataObject = JsonUtility.FromJson<AppendedMicroSensations>(fromjsonString);
+
+        // to send saved json appened files
+        OWO.Send(Sensation.Parse(dataObject.data));
+    }
+
+    private string CombineAppendedSensations(List<(MicroSensation sensation, Muscle[] muscles)> data, int index)
+    {
+        if (index == data.Count - 1) // base case, if we're at the last item
+        {
+            return data[index].sensation.WithMuscles(data[index].muscles);
+        }
+
+        return data[index].sensation.WithMuscles(data[index].muscles).Append(CombineAppendedSensations(data, index + 1));
+    }
+    
+    private (MicroSensation, Muscle[]) LoadSensationsForAppend(string sensationName)
+    {
+        string path = Path.Combine("Assets/MicroSensation Events", sensationName + ".json");
+        if (!File.Exists(path)) return (null, null);
+
+        string jsonData = File.ReadAllText(path);
+        HapticData data = JsonUtility.FromJson<HapticData>(jsonData);
+
+        MicroSensation loadedHapticEvent = SensationsFactory.Create(
+            data.frequency,
+            data.duration,
+            data.intensityPercentage,
+            data.rampUpInMills,
+            data.rampDownInMills,
+            data.exitDelay
+        );
+
+        Muscle[] selectedMuscles = GetSelectedMusclesFromData(data);
+
+        return (loadedHapticEvent, selectedMuscles);
     }
     public void SendHapticEventFromFileDropDown()
     {

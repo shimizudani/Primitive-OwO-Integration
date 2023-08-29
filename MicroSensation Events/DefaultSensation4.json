@@ -1,0 +1,62 @@
+{
+    "sensationName": "DefaultSensation4",
+    "allMuscles": false,
+    "backMuscles": false,
+    "frontMuscles": false,
+    "frequency": 52,
+    "duration": 10.0,
+    "intensityPercentage": 100,
+    "rampUpInMills": 1.0,
+    "rampDownInMills": 1.5,
+    "exitDelay": 0.0,
+    "pectoral_R": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 50
+    },
+    "pectoral_L": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 25
+    },
+    "abdominal_R": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "abdominal_L": {
+        "isUsed": true,
+        "useOveride": false,
+        "intensityOveride": 75
+    },
+    "arm_R": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "arm_L": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "dorsal_R": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "dorsal_L": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "lumbar_R": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    },
+    "lumbar_L": {
+        "isUsed": false,
+        "useOveride": false,
+        "intensityOveride": 0
+    }
+}
