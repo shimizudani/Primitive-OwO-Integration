@@ -167,25 +167,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d33091c6c04791a4b8524d0056b0a0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fileNames:
+  - DefaultSensation
+  - DefaultSensation2
+  - DefaultSensation
+  - DefaultSensation2
+  appendFileName: Sensation One
   sensationName: DefaultSensation
-  frequency: 100
+  frequency: 1
   duration: 1
-  intensityPercentage: 25
+  intensityPercentage: 1
   useMuscleIntOveride: 0
   rampUpInMills: 0
   rampDownInMills: 0
   exitDelay: 0
-  allMuscles: 1
+  allMuscles: 0
   backMuscles: 0
   frontMuscles: 0
   pectoral_R:
-    isUsed: 0
+    isUsed: 1
     useOveride: 0
-    intensityOveride: 0
+    intensityOveride: 50
   pectoral_L:
     isUsed: 0
     useOveride: 0
-    intensityOveride: 0
+    intensityOveride: 25
   abdominal_R:
     isUsed: 0
     useOveride: 0
@@ -193,7 +199,7 @@ MonoBehaviour:
   abdominal_L:
     isUsed: 0
     useOveride: 0
-    intensityOveride: 0
+    intensityOveride: 75
   arm_R:
     isUsed: 0
     useOveride: 0
@@ -220,7 +226,8 @@ MonoBehaviour:
     intensityOveride: 0
   availableFiles:
   - DefaultSensation
-  selectedFileIndex: 0
+  - DefaultSensation2
+  selectedFileIndex: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
